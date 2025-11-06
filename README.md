@@ -1,8 +1,10 @@
 # RL y Estructura de Información en POMDPs
 
-Este repositorio explora los conceptos del paper "On the Role of Information Structure..." (Altabaa & Yang, 2024) aplicando sus ideas teóricas a modelos de caja negra (DRQN/LSTM).
+Este repositorio investiga cómo la **estructura de información**, un concepto clave del paper "[On the Role of Information Structure...](https://arxiv.org/abs/2306.02243)" (Altabaa & Yang, NeurIPS 2024), puede ser utilizada para **mejorar positivamente el rendimiento** de agentes de Deep Q-Networks (DQN) en entornos parcialmente observables (POMDPs).
 
-El objetivo es medir cómo diferentes **estructuras de información** (implementadas como entornos POMDP personalizados) desafían la capacidad de un agente DRQN estándar para aprender una política óptima.
+El objetivo es demostrar que un agente estándar de "caja negra" como un DRQN (DQN + LSTM) es estadísticamente ineficiente. Al inyectar conocimiento sobre la estructura causal del problema (como un "sesgo inductivo"), podemos lograr un aprendizaje drásticamente más rápido y robusto.
+
+Para probar esta tesis, se han diseñado cuatro entornos POMDP personalizados.
 
 ---
 
@@ -14,7 +16,7 @@ Este proyecto utiliza **Python 3.11** y se gestiona con `conda`.
 
 1.  **Clona el repositorio:**
     ```bash
-    git clone https://github.com/Nicoleitor57/IS-DQN.git
+    git clone [https://github.com/Nicoleitor57/IS-DQN.git](https://github.com/Nicoleitor57/IS-DQN.git)
     cd IS-DQN
     ```
 
@@ -29,7 +31,7 @@ Este proyecto utiliza **Python 3.11** y se gestiona con `conda`.
 
 3.  **Instala las dependencias:**
     ```bash
-    # (Asegúrate de tener un archivo requirements.txt con [gymnasium, ray[rllib], torch])
+    # Instala las bibliotecas requeridas
     pip install -r requirements.txt
     ```
 
@@ -37,7 +39,7 @@ Este proyecto utiliza **Python 3.11** y se gestiona con `conda`.
 
 ## 🔬 Entornos de Prueba
 
-El núcleo de este proyecto son cuatro entornos POMDP diseñados a medida, cada uno para probar una debilidad específica de los modelos de memoria "black-box" (como un LSTM).
+El núcleo de este proyecto son cuatro entornos POMDP diseñados a medida, cada uno para probar una debilidad específica de los modelos de memoria "black-box".
 
 ### 1. POKeyDoorEnv (El Baseline: POMDP vs. MDP)
 
