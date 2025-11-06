@@ -14,8 +14,8 @@ Este proyecto utiliza **Python 3.11** y se gestiona con `conda`.
 
 1.  **Clona el repositorio:**
     ```bash
-    git clone [https://tu-url-del-repositorio.git](https://tu-url-del-repositorio.git)
-    cd tu-repositorio
+    git clone https://github.com/Nicoleitor57/IS-DQN.git
+    cd IS-DQN
     ```
 
 2.  **Crea y activa el entorno de Conda:**
