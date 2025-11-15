@@ -77,6 +77,12 @@ class TwoTigersEnv(gym.Env):
         self._last_action = None
         self._last_observation = None
         self._last_reward = 0
+        
+    def action_space_(self):
+        return self.action_space.n
+    
+    def state_space_(self):
+        return 4 #( S_rr, S_rl, S_lr, S_ll )
 
     def _get_info(self):
         return {
