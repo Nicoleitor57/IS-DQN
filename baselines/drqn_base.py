@@ -14,6 +14,8 @@ import random
 import sys
 from stable_baselines3.common.monitor import Monitor # Para crear 'monitor.csv'
 
+# Agregar el directorio padre al path para que importe los módulos del proyecto
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Entornos.PODoorEnv import POKeyDoorEnv
 from Entornos.KeyDoorMazeEnv import KeyDoorMazeEnv
@@ -243,7 +245,8 @@ def run_drqn_experiment(env_id, env_config, h_params, run_idx, device):
     """
     Ejecuta una corrida de entrenamiento de DRQN (PyTorch) para un entorno dado.
     """
-    log_dir = f"drqn_logs/{env_id}/run_{run_idx}"
+    baselines_dir = os.path.dirname(os.path.abspath(__file__))
+    log_dir = os.path.join(baselines_dir, f"drqn_logs/{env_id}/run_{run_idx}")
     os.makedirs(log_dir, exist_ok=True)
     model_path = os.path.join(log_dir, "drqn_model.pth") # Guardamos como .pth
 
@@ -439,7 +442,7 @@ if __name__ == "__main__":
         },
         "TwoTigersEnv": {
             "class": TwoTigersEnv,
-            "init_params": {"max_episode_steps": 1000}
+            "init_params": {"max_episode_steps": 50}
         },
         "DelayedObsEnv": {
             "class": DelayedObsEnv,
@@ -457,16 +460,16 @@ if __name__ == "__main__":
         'num_runs': 10, # 10 corridas
         'episodes': 650, # Timesteps total = episodes * max_step
         'max_step': 1000, # Máximos pasos por episodio
-        'learning_rate': 1e-3,
-        'gamma': 0.99,
-        'batch_size': 8,
-        'buffer_size': 50000, # (No usado por EpisodeMemory, pero lo guardamos)
+        'learning_rate': 2.5e-4,
+        'gamma': 0.9,
+        'batch_size': 512,
+        'buffer_size': 60_000, # (No usado por EpisodeMemory, pero lo guardamos)
         'min_epi_num': 20, # Empezar a entrenar después de 20 episodios
         'target_update_period': 4,
         'eps_start': 0.1,
         'eps_end': 0.001,
         'eps_decay': 0.995,
-        'tau': 1e-2,
+        'tau': 0.005, # Para soft update
         'random_update': True,
         'lookup_step': 20,
         'max_epi_num': 100, # Tamaño del buffer (en episodios)
@@ -480,7 +483,8 @@ if __name__ == "__main__":
         print(f"🚀 Iniciando Experimento para Entorno: {env_id} (DRQN Baseline)")
         print(f"{'='*80}")
 
-        base_log_dir = f"drqn_logs/{env_id}"
+        baselines_dir = os.path.dirname(os.path.abspath(__file__))
+        base_log_dir = os.path.join(baselines_dir, f"drqn_logs/{env_id}")
         log_files_pattern = f"{base_log_dir}/run_*/monitor.csv"
         model_paths = {}
 
@@ -627,8 +631,9 @@ if __name__ == "__main__":
         plt.legend()
         plt.grid(True)
         # Guardar en la carpeta de logs del entorno
-        plt.savefig(f"drqn_logs/{env_id}/{env_id}_drqn_grafico_largo.png")
-        print(f"Gráfico 'drqn_logs/{env_id}/{env_id}_drqn_grafico_largo.png' guardado.")
+        graph_path_largo = os.path.join(base_log_dir, f"{env_id}_drqn_grafico_largo.png")
+        plt.savefig(graph_path_largo)
+        print(f"Gráfico '{graph_path_largo}' guardado.")
         
         
         plt.figure(figsize=(12, 7))
@@ -639,8 +644,9 @@ if __name__ == "__main__":
         plt.ylabel('Recompensa Promedio de Episodio')
         plt.legend()
         plt.grid(True)
-        plt.savefig(f"drqn_logs/{env_id}/{env_id}_drqn_grafico_recompensa.png")
-        print(f"Gráfico 'drqn_logs/{env_id}/{env_id}_drqn_grafico_recompensa.png' guardado.")
+        graph_path_recompensa = os.path.join(base_log_dir, f"{env_id}_drqn_grafico_recompensa.png")
+        plt.savefig(graph_path_recompensa)
+        print(f"Gráfico '{graph_path_recompensa}' guardado.")
 
         print(f"\nGráficos para {env_id} generados.")
         

@@ -14,6 +14,14 @@ from collections import deque, namedtuple
 import matplotlib.pyplot as plt
 from tqdm import trange
 
+# Optional: stable_baselines3 Monitor for standard RL logging (monitor.csv)
+try:
+    from stable_baselines3.common.monitor import Monitor
+    _HAS_SB3_MONITOR = True
+except Exception:
+    Monitor = None
+    _HAS_SB3_MONITOR = False
+
 # ==============================================================================
 # === 1. ENTORNO (Tu código de KeyDoorMazeEnv) =================================
 # ==============================================================================
@@ -498,10 +506,22 @@ if __name__ == "__main__":
     MAX_STEPS_PER_EPISODE = 1000
     TRAIN_EVERY_N_STEPS = 4
     
-    env = KeyDoorMazeEnv(max_episode_steps=MAX_STEPS_PER_EPISODE)
+    # Create environment. If stable_baselines3 Monitor is available, wrap env to
+    # save monitor.csv logs to logs/IS_Maze/monitor_<timestamp>.csv
+    log_dir = os.path.join("logs", "IS_Maze")
+    if _HAS_SB3_MONITOR:
+        os.makedirs(log_dir, exist_ok=True)
+        monitor_file = os.path.join(log_dir, f"monitor_{int(time.time())}.csv")
+        env = Monitor(KeyDoorMazeEnv(max_episode_steps=MAX_STEPS_PER_EPISODE), monitor_file)
+        print(f"Monitor habilitado. Logs -> {monitor_file}")
+    else:
+        env = KeyDoorMazeEnv(max_episode_steps=MAX_STEPS_PER_EPISODE)
+        print("stable_baselines3 Monitor no disponible. Instala 'stable-baselines3' para guardar logs con Monitor.")
+
     agent = Agent()
     
     episode_rewards = []
+    episode_lengths = []
     all_losses = {
         "total": [], "dqn": [], "psr_rew": [], "psr_key": []
     }
@@ -516,6 +536,7 @@ if __name__ == "__main__":
         agent.reset_hidden_state()
         
         episode_reward = 0
+        episode_steps = 0
         
         for t in range(MAX_STEPS_PER_EPISODE):
             action = agent.get_action(obs)
@@ -527,6 +548,7 @@ if __name__ == "__main__":
             
             obs = next_obs
             episode_reward += reward
+            episode_steps += 1
             total_steps += 1
             
             if total_steps % TRAIN_EVERY_N_STEPS == 0:
@@ -544,14 +566,17 @@ if __name__ == "__main__":
                 break
         
         episode_rewards.append(episode_reward)
+        episode_lengths.append(episode_steps)
         
         if (i_episode + 1) % 100 == 0:
             avg_reward = np.mean(episode_rewards[-100:])
+            avg_length = np.mean(episode_lengths[-100:])
             avg_loss_key = np.mean(all_losses["psr_key"][-100:]) if all_losses["psr_key"] else 0
             steps_per_sec = int((total_steps) / (time.time() - start_time))
             
             print(f"Episodio {i_episode+1}/{NUM_EPISODES} | "
                   f"Recompensa Media (100 ep): {avg_reward:.2f} | "
+                  f"Largo Promedio (100 ep): {avg_length:.1f} | "
                   f"Loss Llave (PSR): {avg_loss_key:.3f} | "
                   f"SPS: {steps_per_sec}")
             start_time = time.time()
@@ -564,15 +589,22 @@ if __name__ == "__main__":
 
     window = 50
     smoothed_rewards = moving_average(episode_rewards, window)
+    smoothed_lengths = moving_average(episode_lengths, window)
     
-    plt.figure(figsize=(12, 5))
-    plt.subplot(1, 2, 1)
+    plt.figure(figsize=(15, 5))
+    plt.subplot(1, 3, 1)
     plt.plot(smoothed_rewards)
     plt.title(f"Recompensas por Episodio (Suavizado {window})")
     plt.xlabel(f"Episodio (x{window})")
     plt.ylabel("Recompensa Media")
 
-    plt.subplot(1, 2, 2)
+    plt.subplot(1, 3, 2)
+    plt.plot(smoothed_lengths)
+    plt.title(f"Largo Promedio de Episodios (Suavizado {window})")
+    plt.xlabel(f"Episodio (x{window})")
+    plt.ylabel("Pasos por Episodio")
+
+    plt.subplot(1, 3, 3)
     plt.plot(moving_average(all_losses["total"], window), label="Loss Total")
     plt.plot(moving_average(all_losses["dqn"], window), label="Loss DQN (Control)")
     plt.plot(moving_average(all_losses["psr_key"], window), label="Loss PSR (Llave)", linestyle='--')

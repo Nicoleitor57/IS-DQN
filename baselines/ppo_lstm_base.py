@@ -6,12 +6,16 @@ import os
 import glob
 import matplotlib.pyplot as plt
 import torch 
+import sys
 from stable_baselines3.common.callbacks import BaseCallback
 
 
 from sb3_contrib import RecurrentPPO  
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv
+
+# Agregar el directorio padre al path para que importe los módulos del proyecto
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # --- Importar Entornos Personalizados ---
 from Entornos.PODoorEnv import POKeyDoorEnv
@@ -58,7 +62,8 @@ def run_ppo_experiment(env_id, env_config, h_params, run_idx):
     Ejecuta una corrida de entrenamiento de PPO Recurrente.
     """
     # Directorio de logs
-    log_dir = f"ppo_logs/{env_id}/run_{run_idx}" # Carpeta PPO
+    baselines_dir = os.path.dirname(os.path.abspath(__file__))
+    log_dir = os.path.join(baselines_dir, f"ppo_logs/{env_id}/run_{run_idx}") # Carpeta PPO
     os.makedirs(log_dir, exist_ok=True)
     model_path = os.path.join(log_dir, "ppo_model.zip") # Modelo PPO
 
@@ -221,7 +226,8 @@ if __name__ == "__main__":
         print(f"{'='*80}")
 
         # Rutas de logs y modelos
-        base_log_dir = f"ppo_logs/{env_id}" ### CAMBIO ###
+        baselines_dir = os.path.dirname(os.path.abspath(__file__))
+        base_log_dir = os.path.join(baselines_dir, f"ppo_logs/{env_id}") ### CAMBIO ###
         log_files_pattern = f"{base_log_dir}/run_*/monitor.csv"
         model_paths = {}
 

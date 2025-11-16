@@ -10,7 +10,11 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv
 
 import torch 
+import sys
 from stable_baselines3.common.callbacks import BaseCallback
+
+# Agregar el directorio padre al path para que importe los módulos del proyecto
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # --- 1. IMPORTAR ENTORNOS PERSONALIZADOS ---
 # (Asegúrate de que estos archivos .py estén en la misma carpeta)
@@ -77,7 +81,8 @@ def run_dqn_experiment(env_id, env_config, h_params, run_idx):
     :param run_idx: El índice de la corrida actual.
     :returns: Ruta al modelo guardado o None si falla.
     """
-    log_dir = f"dqn_logs/{env_id}/run_{run_idx}"
+    baselines_dir = os.path.dirname(os.path.abspath(__file__))
+    log_dir = os.path.join(baselines_dir, f"dqn_logs/{env_id}/run_{run_idx}")
     os.makedirs(log_dir, exist_ok=True)
     model_path = os.path.join(log_dir, "dqn_model.zip")
 
@@ -245,7 +250,8 @@ if __name__ == "__main__":
         print(f"{'='*80}")
 
         # Rutas de logs y modelos específicas del entorno
-        base_log_dir = f"dqn_logs/{env_id}"
+        baselines_dir = os.path.dirname(os.path.abspath(__file__))
+        base_log_dir = os.path.join(baselines_dir, f"dqn_logs/{env_id}")
         log_files_pattern = f"{base_log_dir}/run_*/monitor.csv"
         model_paths = {} # Resetear para cada entorno
 
