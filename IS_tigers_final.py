@@ -658,10 +658,10 @@ if __name__ == "__main__":
         'total_timesteps': 300_000,
         
         # --- Parámetros DQN ---
-        'learning_rate': 2.5e-4,     
+        'learning_rate': 2.5e-5,     
         'buffer_size': 60_000,        
         'learning_starts': 20_000,     
-        'batch_size': 512,           
+        'batch_size': 2048,           
         'gamma': 0.9,                # El 'gamma' impaciente que dio el pico +49.60
         'train_freq': (4, "step"),   # (Se usa como 'update_every_steps')
         
@@ -846,7 +846,7 @@ if __name__ == "__main__":
         plt.figure(figsize=(12, 7))
         plt.plot(avg_learning_curve, label='Promedio por episodio', alpha=0.3)
         plt.plot(avg_lengths_smooth, label=f'Media móvil (ventana={window})', color='blue')
-        plt.title(f'Curva de Aprendizaje: Largo de Episodios ({env_id} - Custom DQN-PER)')
+        plt.title(f'Curva de Aprendizaje: Largo de Episodios ({env_id} - Custom IS-DQN-PER)')
         plt.xlabel('Episodios')
         plt.ylabel('Largo Promedio de Episodio')
         plt.legend()
@@ -858,7 +858,7 @@ if __name__ == "__main__":
         plt.figure(figsize=(12, 7))
         plt.plot(avg_reward_curve, label='Promedio por episodio', alpha=0.3)
         plt.plot(avg_rewards_smooth, label=f'Media móvil (ventana={window})', color='green')
-        plt.title(f'Curva de Aprendizaje: Recompensa de Episodios ({env_id} - Custom DQN-PER)')
+        plt.title(f'Curva de Aprendizaje: Recompensa de Episodios ({env_id} - Custom IS-DQN-PER)')
         plt.xlabel('Episodios')
         plt.ylabel('Recompensa Promedio de Episodio')
         plt.legend()

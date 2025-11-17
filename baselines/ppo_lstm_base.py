@@ -176,37 +176,37 @@ if __name__ == "__main__":
 
     # --- 2. DEFINIR LOS ENTORNOS A PROBAR ---
     ENVIRONMENTS = {
-        "POKeyDoorEnv": {
-            "class": POKeyDoorEnv,
-            "policy": "MlpLstmPolicy", 
-            "init_params": {"size": 10, "max_episode_steps": 1000}
-        },
-        "KeyDoorMazeEnv": {
-            "class": KeyDoorMazeEnv,
-            "policy": "MlpLstmPolicy",
-            "init_params": {"height": 15, "width": 19, "max_episode_steps": 1000}
-        },
-        # "TwoTigersEnv": {
-        #     "class": TwoTigersEnv,
+        # "POKeyDoorEnv": {
+        #     "class": POKeyDoorEnv,
         #     "policy": "MlpLstmPolicy", 
-        #     "init_params": {"max_episode_steps": 1000}
+        #     "init_params": {"size": 10, "max_episode_steps": 1000}
         # },
-        "DelayedObsEnv": {
-            "class": DelayedObsEnv,
+        # "KeyDoorMazeEnv": {
+        #     "class": KeyDoorMazeEnv,
+        #     "policy": "MlpLstmPolicy",
+        #     "init_params": {"height": 15, "width": 19, "max_episode_steps": 1000}
+        # },
+        "TwoTigersEnv": {
+            "class": TwoTigersEnv,
             "policy": "MlpLstmPolicy", 
-            "init_params": {"size": 10, "delay_steps": 3, "max_episode_steps": 1000}
-        }
+            "init_params": {"max_episode_steps": 50}
+        },
+        # "DelayedObsEnv": {
+        #     "class": DelayedObsEnv,
+        #     "policy": "MlpLstmPolicy", 
+        #     "init_params": {"size": 10, "delay_steps": 3, "max_episode_steps": 1000}
+        # }
     }
 
     
     final_params = {
-        'num_runs': 30,
+        'num_runs': 10,
         'total_timesteps': 300000,
-        'learning_rate': 3e-4,       # Tasa de aprendizaje
+        'learning_rate': 2.5e-5,       # Tasa de aprendizaje
         'n_steps': 256,              # Pasos por recolección antes de la actualización
         'batch_size': 64,            # Tamaño del minibatch
         'n_epochs': 10,              # Épocas de optimización por actualización
-        'gamma': 0.99,               # Factor de descuento
+        'gamma': 0.9,               # Factor de descuento
         'gae_lambda': 0.95,          # Factor GAE
         'clip_range': 0.2,           # Rango de PPO clip
         'ent_coef': 0.0,             # Coeficiente de entropía (regularización)

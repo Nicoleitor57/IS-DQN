@@ -252,7 +252,7 @@ def run_drqn_experiment(env_id, env_config, h_params, run_idx, device):
 
     # --- 1. Crear el Entorno ---
     def make_env():
-        # Usa la clase y los parámetros de la configuración
+        # Usa la clase y los parámetros de la configuraciónt
         env = env_config["class"](**env_config["init_params"])
         # ¡IMPORTANTE! Envolvemos con Monitor para guardar 'monitor.csv'
         env = Monitor(env, filename=log_dir)
@@ -432,44 +432,44 @@ if __name__ == "__main__":
     # (¡Asegúrate de que tus entornos estén importados arriba!)
     # (¡Asegúrate de que tus entornos devuelvan un vector de estado, no una imagen!)
     ENVIRONMENTS = {
-        "POKeyDoorEnv": {
-            "class": POKeyDoorEnv,
-            "init_params": {"size": 10, "max_episode_steps": 1000}
-        },
-        "KeyDoorMazeEnv": {
-            "class": KeyDoorMazeEnv,
-            "init_params": {"height": 15, "width": 19, "max_episode_steps": 1000}
-        },
+        # "POKeyDoorEnv": {
+        #     "class": POKeyDoorEnv,
+        #     "init_params": {"size": 10, "max_episode_steps": 1000}
+        # },
+        # "KeyDoorMazeEnv": {
+        #     "class": KeyDoorMazeEnv,
+        #     "init_params": {"height": 15, "width": 19, "max_episode_steps": 1000}
+        # },
         "TwoTigersEnv": {
             "class": TwoTigersEnv,
             "init_params": {"max_episode_steps": 50}
         },
-        "DelayedObsEnv": {
-            "class": DelayedObsEnv,
-            "init_params": {"size": 10, "delay_steps": 3, "max_episode_steps": 1000}
-        },
-        "CartPole_POMDP": {
-            "class": gym.make, # Usamos el 'make' de gym como una 'clase'
-            "init_params": {"id": "CartPole-v1", "max_episode_steps": 1000}
-        }
+        # "DelayedObsEnv": {
+        #     "class": DelayedObsEnv,
+        #     "init_params": {"size": 10, "delay_steps": 3, "max_episode_steps": 1000}
+        # },
+        # "CartPole_POMDP": {
+        #     "class": gym.make, # Usamos el 'make' de gym como una 'clase'
+        #     "init_params": {"id": "CartPole-v1", "max_episode_steps": 1000}
+        # }
     }
 
     # --- 3. DEFINIR HIPERPARÁMETROS PARA DRQN ---
     # (Basados en el script DRQN.py)
     final_params = {
         'num_runs': 10, # 10 corridas
-        'episodes': 650, # Timesteps total = episodes * max_step
+        'episodes': 6000, # Timesteps total = episodes * max_step
         'max_step': 1000, # Máximos pasos por episodio
-        'learning_rate': 2.5e-4,
+        'learning_rate': 2.5e-3,
         'gamma': 0.9,
-        'batch_size': 512,
-        'buffer_size': 60_000, # (No usado por EpisodeMemory, pero lo guardamos)
+        'batch_size': 8,
+        'buffer_size': 50_000, # (No usado por EpisodeMemory, pero lo guardamos)
         'min_epi_num': 20, # Empezar a entrenar después de 20 episodios
         'target_update_period': 4,
         'eps_start': 0.1,
         'eps_end': 0.001,
         'eps_decay': 0.995,
-        'tau': 0.005, # Para soft update
+        'tau': 1e-2, # Para soft update
         'random_update': True,
         'lookup_step': 20,
         'max_epi_num': 100, # Tamaño del buffer (en episodios)

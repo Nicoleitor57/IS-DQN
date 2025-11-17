@@ -60,7 +60,7 @@ class TwoTigersEnv(gym.Env):
         self.max_episode_steps = max_episode_steps
         self._render_mode = render_mode # El usuario selecciona el modo aquí
         
-        self.R_TREASURE = 10
+        self.R_TREASURE = 100 #antes 10
         self.R_TIGER = -100
         self.R_LISTEN = -1
 

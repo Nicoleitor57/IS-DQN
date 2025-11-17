@@ -16,6 +16,7 @@ from stable_baselines3.common.callbacks import BaseCallback
 # Agregar el directorio padre al path para que importe los módulos del proyecto
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+
 # --- 1. IMPORTAR ENTORNOS PERSONALIZADOS ---
 # (Asegúrate de que estos archivos .py estén en la misma carpeta)
 from Entornos.PODoorEnv import POKeyDoorEnv
@@ -203,42 +204,44 @@ if __name__ == "__main__":
     # --- 2. DEFINIR LOS ENTORNOS A PROBAR ---
     # Mapea un ID a la clase del entorno, su política y sus parámetros de __init__
     ENVIRONMENTS = {
-        "POKeyDoorEnv": {
-            "class": POKeyDoorEnv,
-            "policy": "MlpPolicy", # 3x3 grid será aplanado
-            "init_params": {"size": 10, "max_episode_steps": 1000}
-        },
-        "KeyDoorMazeEnv": {
-            "class": KeyDoorMazeEnv,
-            "policy": "MlpPolicy", # 3x3 grid será aplanado
-            "init_params": {"height": 15, "width": 19, "max_episode_steps": 1000}
-        },
+        # "POKeyDoorEnv": {
+        #     "class": POKeyDoorEnv,
+        #     "policy": "MlpPolicy", # 3x3 grid será aplanado
+        #     "init_params": {"size": 10, "max_episode_steps": 1000}
+        # },
+        # "KeyDoorMazeEnv": {
+        #     "class": KeyDoorMazeEnv,
+        #     "policy": "MlpPolicy", # 3x3 grid será aplanado
+        #     "init_params": {"height": 15, "width": 19, "max_episode_steps": 1000}
+        # },
         "TwoTigersEnv": {
             "class": TwoTigersEnv,
             "policy": "MlpPolicy", # MultiDiscrete obs será aplanado y one-hot
-            "init_params": {"max_episode_steps": 1000}
+            "init_params": {"max_episode_steps": 50}
         },
-        "DelayedObsEnv": {
-            "class": DelayedObsEnv,
-            "policy": "MlpPolicy", # 3x3 grid será aplanado
-            "init_params": {"size": 10, "delay_steps": 3, "max_episode_steps": 1000}
-        }
+        # "DelayedObsEnv": {
+        #     "class": DelayedObsEnv,
+        #     "policy": "MlpPolicy", # 3x3 grid será aplanado
+        #     "init_params": {"size": 10, "delay_steps": 3, "max_episode_steps": 1000}
+        # }
     }
 
     # --- 3. DEFINIR HIPERPARÁMETROS ---
     # (Estos son genéricos, pueden necesitar ajuste por entorno)
     final_params = {
-        'num_runs': 30,
+        'num_runs':10,
         'total_timesteps': 300000,
-        'learning_rate': 2.5e-4,     
-        'buffer_size': 50000,        
-        'learning_starts': 5000,     
-        'batch_size': 128,           
-        'gamma': 0.99,               
+        'learning_rate': 2.5e-5,     
+        'buffer_size': 60_000,        
+        'learning_starts': 20_000,     
+        'batch_size': 2048,           
+        'gamma': 0.9,               
         'train_freq': (4, "step"),   
-        'target_update_interval': 2500, 
+        #'target_update_interval': 2500, 
+        'tau': 0.005,                
+        'target_update_interval': 1,
         'exploration_fraction': 0.2,   
-        'exploration_final_eps': 0.05, 
+        'exploration_final_eps': 0.001, 
         'policy_kwargs': dict(net_arch=[64, 64]) 
     }
 
