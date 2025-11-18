@@ -1,10 +1,14 @@
 import gymnasium as gym
 import time
 import numpy as np
-from DelayedObsEnv import DelayedObsEnv
-from PODoorEnv import POKeyDoorEnv
-from KeyDoorMazeEnv import KeyDoorMazeEnv
-from TwoTigersEnv import TwoTigersEnv
+from Entornos.PODoorEnv import POKeyDoorEnv
+from Entornos.KeyDoorMazeEnv import KeyDoorMazeEnv
+from Entornos.TwoTigersEnv import TwoTigersEnv
+from Entornos.DelayedObsEnv import DelayedObsEnv
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 Enviroments = {
     "DelayedObsEnv": DelayedObsEnv,

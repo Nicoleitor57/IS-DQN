@@ -550,23 +550,37 @@ class PrioritizedReplayBuffer:
     def update_priorities(self, batch_indices, batch_priorities):
         for idx, prio in zip(batch_indices, batch_priorities):
             self.priorities[idx] = prio + 1e-5
-
 class DQNAgent:
     def __init__(self, state_dim, action_dim, h_params, device):
-        self.device, self.gamma, self.batch_size, self.tau = device, h_params['gamma'], h_params['batch_size'], h_params['tau']
+        self.device = device
+        self.gamma = h_params['gamma']
+        self.batch_size = h_params['batch_size']
+        self.tau = h_params['tau']
         
-        net_arch = h_params.get('policy_kwargs', {}).get('net_arch', [256, 256]) # Default robusto
+        # Red Neuronal
+        net_arch = h_params.get('policy_kwargs', {}).get('net_arch', [256, 256])
         self.q_net = QNet(state_dim, action_dim, net_arch).to(device)
         self.target_q_net = QNet(state_dim, action_dim, net_arch).to(device)
         self.target_q_net.load_state_dict(self.q_net.state_dict())
         self.optimizer = optim.Adam(self.q_net.parameters(), lr=h_params['learning_rate'])
         
+        # Buffer de Repetición
         self.buffer = PrioritizedReplayBuffer(state_dim, h_params['buffer_size'], self.batch_size, h_params['alpha'])
         self.beta, self.beta_inc = h_params['beta_start'], (1.0 - h_params['beta_start']) / h_params['beta_frames']
 
+    # --- ¡MÉTODO AGREGADO! ---
+    def store_transition(self, obs, act, rew, next_obs, done):
+        """Almacena la transición en el buffer interno."""
+        self.buffer.put(obs, act, rew, next_obs, done)
+    # -------------------------
+
     def update(self):
         if self.buffer.size < self.batch_size: return None
+        
+        # Annealing de Beta
         self.beta = min(1.0, self.beta + self.beta_inc)
+        
+        # Muestreo del Buffer
         samples, idxs, weights = self.buffer.sample(self.beta)
         
         states = torch.FloatTensor(samples['obs']).to(self.device)
@@ -576,26 +590,38 @@ class DQNAgent:
         dones = torch.FloatTensor(samples['done'].reshape(-1,1)).to(self.device)
         weights_t = torch.FloatTensor(weights).reshape(-1,1).to(self.device)
 
+        # Cálculo del Target (Double DQN logic implícita al usar target network)
         with torch.no_grad():
             q_next = self.target_q_net(next_states).max(1)[0].unsqueeze(1)
             targets = rewards + self.gamma * q_next * (1 - dones)
         
+        # Cálculo del Q actual
         q_curr = self.q_net(states).gather(1, actions)
+        
+        # Loss ponderada por pesos de PER
         loss = (F.smooth_l1_loss(q_curr, targets, reduction='none') * weights_t).mean()
         
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
         
+        # Actualizar prioridades en el buffer
         td_errors = (targets - q_curr).abs().detach().cpu().numpy().squeeze()
         self.buffer.update_priorities(idxs, td_errors)
+        
         return loss.item()
 
     def soft_update(self):
         for tp, lp in zip(self.target_q_net.parameters(), self.q_net.parameters()):
             tp.data.copy_(self.tau * lp.data + (1.0 - self.tau) * tp.data)
             
-    def save(self, path): torch.save(self.q_net.state_dict(), path)
+    def save(self, path): 
+        torch.save(self.q_net.state_dict(), path)
+    
+    def sample_action(self, obs, epsilon):
+        # Delegamos a la red interna
+        return self.q_net.sample_action(obs, epsilon)
+    
 
 # ==============================================================================
 # 3. UTILIDADES DE LOGGING Y PLOTTING
@@ -681,12 +707,12 @@ if __name__ == "__main__":
     # --- HIPERPARÁMETROS KEYDOOR MAZE ---
     # Ajustados para el nuevo entorno de 855 estados
     final_params = {
-        'num_runs': 5,               # 5 Corridas para probar
-        'total_timesteps': 500_000,  # Más pasos porque el maze es más difícil
-        'learning_rate': 2.5e-4,     
+        'num_runs': 1,               # 5 Corridas para probar
+        'total_timesteps': 300_000,  # Más pasos porque el maze es más difícil
+        'learning_rate': 2.5e-5,     
         'buffer_size': 100_000,      
-        'learning_starts': 10_000,   # Empezar antes para ver si avanza
-        'batch_size': 512,           # Estabilidad
+        'learning_starts': 20_000,   # Empezar antes para ver si avanza
+        'batch_size': 2048,           # Estabilidad
         'gamma': 0.95,               # Un poco más paciente para el laberinto largo
         'train_freq': (4, "step"),
         'tau': 0.005,
@@ -697,7 +723,7 @@ if __name__ == "__main__":
         'exploration_fraction': 0.3, # Explorar el 30% del tiempo (laberinto grande)
         
         # RED MÁS GRANDE PARA INPUT DE 856 DIMENSIONES
-        'policy_kwargs': dict(net_arch=[256, 256]), 
+        'policy_kwargs': dict(net_arch=[512, 512]), 
         
         'alpha': 0.6, 'beta_start': 0.4, 'beta_frames': 500_000
     }
@@ -719,7 +745,7 @@ if __name__ == "__main__":
         print(f"\n=== Iniciando {env_id} Run {run_i} ===")
         
         # 1. Init Entorno y Agente
-        env = KeyDoorMazeEnv(max_episode_steps=200) # Horizonte más largo para el laberinto
+        env = KeyDoorMazeEnv(max_episode_steps=1000) # Horizonte más largo para el laberinto
         env = KeyDoorBeliefWrapper(env)
         
         agent = DQNAgent(
@@ -768,7 +794,7 @@ if __name__ == "__main__":
             if done:
                 logger.log(ep_rew, ep_len)
                 obs, _ = env.reset()
-                ep_rew, ep_len = 0
+                ep_rew, ep_len = 0, 0
             
             if t % 10000 == 0:
                 print(f"Run {run_i} | Paso {t} | Eps: {eps:.3f}")

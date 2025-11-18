@@ -169,7 +169,7 @@ def main():
                         help='Ventana de suavizado.')
 
     # --- NUEVO ARGUMENTO ---
-    parser.add_argument('--tipo', type=str, default=None, choices=['corto', 'largo'],
+    parser.add_argument('--tipo', type=str, default=None, choices=['corto', 'largo','100'],
                         help='Opcional: Agrega "-corto" o "-largo" al nombre del entorno para buscar logs específicos.')
     
     args = parser.parse_args()

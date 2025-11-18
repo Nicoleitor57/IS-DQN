@@ -458,18 +458,18 @@ if __name__ == "__main__":
     # (Basados en el script DRQN.py)
     final_params = {
         'num_runs': 10, # 10 corridas
-        'episodes': 6000, # Timesteps total = episodes * max_step
+        'episodes': 600, # Timesteps total = episodes * max_step
         'max_step': 1000, # Máximos pasos por episodio
         'learning_rate': 2.5e-3,
         'gamma': 0.9,
         'batch_size': 8,
-        'buffer_size': 50_000, # (No usado por EpisodeMemory, pero lo guardamos)
+        'buffer_size': 60_000, # (No usado por EpisodeMemory, pero lo guardamos)
         'min_epi_num': 20, # Empezar a entrenar después de 20 episodios
         'target_update_period': 4,
         'eps_start': 0.1,
         'eps_end': 0.001,
         'eps_decay': 0.995,
-        'tau': 1e-2, # Para soft update
+        'tau': 0.005, # Para soft update
         'random_update': True,
         'lookup_step': 20,
         'max_epi_num': 100, # Tamaño del buffer (en episodios)
