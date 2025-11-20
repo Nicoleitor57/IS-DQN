@@ -707,7 +707,7 @@ if __name__ == "__main__":
     # --- HIPERPARÁMETROS KEYDOOR MAZE ---
     # Ajustados para el nuevo entorno de 855 estados
     final_params = {
-        'num_runs': 1,               # 5 Corridas para probar
+        'num_runs': 10,               # 5 Corridas para probar
         'total_timesteps': 300_000,  # Más pasos porque el maze es más difícil
         'learning_rate': 2.5e-5,     
         'buffer_size': 100_000,      

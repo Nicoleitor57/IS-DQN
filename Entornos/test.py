@@ -102,8 +102,8 @@ if __name__ == "__main__":
     
     # VVV --- ¡CAMBIA ESTA LÍNEA PARA PROBAR OTRO ENTORNO! --- VVV
     #env_to_test = "POKeyDoorEnv"
-    #env_to_test = "DelayedObsEnv"
-    env_to_test = "KeyDoorMazeEnv"
+    env_to_test = "DelayedObsEnv"
+    #env_to_test = "KeyDoorMazeEnv"
     #env_to_test = "TwoTigersEnv"
     # ^^^ ---------------------------------------------------- ^^^
 

@@ -436,14 +436,14 @@ if __name__ == "__main__":
         #     "class": POKeyDoorEnv,
         #     "init_params": {"size": 10, "max_episode_steps": 1000}
         # },
-        # "KeyDoorMazeEnv": {
-        #     "class": KeyDoorMazeEnv,
-        #     "init_params": {"height": 15, "width": 19, "max_episode_steps": 1000}
-        # },
-        "TwoTigersEnv": {
-            "class": TwoTigersEnv,
-            "init_params": {"max_episode_steps": 50}
+        "KeyDoorMazeEnv": {
+            "class": KeyDoorMazeEnv,
+            "init_params": {"height": 15, "width": 19, "max_episode_steps": 1000}
         },
+        # "TwoTigersEnv": {
+        #     "class": TwoTigersEnv,
+        #     "init_params": {"max_episode_steps": 50}
+        # },
         # "DelayedObsEnv": {
         #     "class": DelayedObsEnv,
         #     "init_params": {"size": 10, "delay_steps": 3, "max_episode_steps": 1000}
@@ -458,12 +458,12 @@ if __name__ == "__main__":
     # (Basados en el script DRQN.py)
     final_params = {
         'num_runs': 10, # 10 corridas
-        'episodes': 600, # Timesteps total = episodes * max_step
+        'episodes': 7000, # Timesteps total = episodes * max_step
         'max_step': 1000, # Máximos pasos por episodio
-        'learning_rate': 2.5e-3,
-        'gamma': 0.9,
+        'learning_rate': 2.5e-5,
+        'gamma': 0.95,
         'batch_size': 8,
-        'buffer_size': 60_000, # (No usado por EpisodeMemory, pero lo guardamos)
+        'buffer_size': 100_000, # (No usado por EpisodeMemory, pero lo guardamos)
         'min_epi_num': 20, # Empezar a entrenar después de 20 episodios
         'target_update_period': 4,
         'eps_start': 0.1,

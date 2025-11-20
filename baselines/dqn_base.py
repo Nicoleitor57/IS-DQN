@@ -217,7 +217,7 @@ if __name__ == "__main__":
         "TwoTigersEnv": {
             "class": TwoTigersEnv,
             "policy": "MlpPolicy", # MultiDiscrete obs será aplanado y one-hot
-            "init_params": {"max_episode_steps": 50}
+            "init_params": {"max_episode_steps": 1000}
         },
         # "DelayedObsEnv": {
         #     "class": DelayedObsEnv,
@@ -230,12 +230,12 @@ if __name__ == "__main__":
     # (Estos son genéricos, pueden necesitar ajuste por entorno)
     final_params = {
         'num_runs':10,
-        'total_timesteps': 300000,
+        'total_timesteps': 7_000_000,
         'learning_rate': 2.5e-5,     
-        'buffer_size': 60_000,        
+        'buffer_size': 100_000,        
         'learning_starts': 20_000,     
         'batch_size': 2048,           
-        'gamma': 0.9,               
+        'gamma': 0.95,               
         'train_freq': (4, "step"),   
         #'target_update_interval': 2500, 
         'tau': 0.005,                

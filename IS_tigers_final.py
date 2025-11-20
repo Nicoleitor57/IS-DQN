@@ -648,14 +648,14 @@ if __name__ == "__main__":
         "TwoTigersEnv": {
             "class": TwoTigersEnv,
             "policy": "MlpPolicy", # (Este 'policy' ya no se usa, pero lo dejamos)
-            "init_params": {"max_episode_steps": 50}
+            "init_params": {"max_episode_steps": 1000}
         },
     }
 
     # --- 3. DEFINIR HIPERPARÁMETROS (para el agente custom) ---
     final_params = {
         'num_runs': 10,
-        'total_timesteps': 300_000,
+        'total_timesteps': 650_000,
         
         # --- Parámetros DQN ---
         'learning_rate': 2.5e-5,     
