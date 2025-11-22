@@ -212,7 +212,7 @@ if __name__ == "__main__":
         "KeyDoorMazeEnv": {
             "class": KeyDoorMazeEnv,
             "policy": "MlpPolicy", # 3x3 grid será aplanado
-            "init_params": {"height": 15, "width": 19, "max_episode_steps": 1000}
+            "init_params": {"height": 15, "width": 19, "max_episode_steps": 200}
         },
         # "TwoTigersEnv": {
         #     "class": TwoTigersEnv,
@@ -230,7 +230,7 @@ if __name__ == "__main__":
     # (Estos son genéricos, pueden necesitar ajuste por entorno)
     final_params = {
         'num_runs':10,
-        'total_timesteps': 7_000_000,
+        'total_timesteps': 300_000,
         'learning_rate': 2.5e-5,     
         'buffer_size': 100_000,        
         'learning_starts': 20_000,     

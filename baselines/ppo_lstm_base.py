@@ -184,7 +184,7 @@ if __name__ == "__main__":
         "KeyDoorMazeEnv": {
             "class": KeyDoorMazeEnv,
             "policy": "MlpLstmPolicy",
-            "init_params": {"height": 15, "width": 19, "max_episode_steps": 1000}
+            "init_params": {"height": 15, "width": 19, "max_episode_steps": 200}
         },
         # "TwoTigersEnv": {
         #     "class": TwoTigersEnv,
@@ -219,7 +219,7 @@ if __name__ == "__main__":
     # }
     final_params = {
     'num_runs': 10,
-    'total_timesteps': 6_500_000,
+    'total_timesteps': 300_000,
     'learning_rate': 1e-4,       # Ligeramente más alta para más velocidad inicial
     'n_steps': 1024,             # <--- AUMENTADO: Horizonte de memoria
     'batch_size': 128,           # <--- AUMENTADO: Estabilidad con n_steps más largo
