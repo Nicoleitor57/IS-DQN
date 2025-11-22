@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
+import sys
 
 def smooth_data(data, window_size):
     """
@@ -30,21 +31,15 @@ def load_log_data(base_path, env_name, num_runs):
     target_dir = os.path.join(base_path, env_name)
     print(f"  -> Buscando logs en: {target_dir}")
 
-    # Verificar si la carpeta del entorno existe para este algoritmo
     if not os.path.exists(target_dir):
         print(f"     Advertencia: No existe la carpeta {target_dir}")
-        return None, None, 0
+        return None, None, 0, 0
 
     for i in range(1, num_runs + 1):
         log_file = os.path.join(target_dir, f'run_{i}', 'monitor.csv')
         
-        # Lógica de fallback por si las corridas no son secuenciales (ej. run_1, run_10)
-        if not os.path.exists(log_file):
-            pass 
-
         if os.path.exists(log_file):
             try:
-                # Saltamos la primera fila (metadata JSON)
                 df = pd.read_csv(log_file, skiprows=1)
                 if not df.empty and 'r' in df.columns and 'l' in df.columns:
                     all_rewards.append(df['r'].values)
@@ -56,25 +51,18 @@ def load_log_data(base_path, env_name, num_runs):
                 print(f"     Error cargando {log_file}: {e}")
 
     if not all_rewards:
-        return None, None, 0
+        return None, None, 0, 0
 
-    try:
-        if min_len == float('inf'):
-            return None, None, 0
+    # Truncamos los arrays a la longitud mínima para ese algoritmo
+    rewards_truncated = [r[:min_len] for r in all_rewards]
+    lengths_truncated = [l[:min_len] for l in all_lengths]
+    
+    return np.array(rewards_truncated), np.array(lengths_truncated), min_len, len(all_rewards)
 
-        rewards_truncated = [r[:min_len] for r in all_rewards]
-        lengths_truncated = [l[:min_len] for l in all_lengths]
-        
-        return np.array(rewards_truncated), np.array(lengths_truncated), min_len
-    except Exception as e:
-        print(f"Error al procesar datos: {e}")
-        return None, None, 0
-
-def plot_comparison(env_name_base, num_runs, smooth_window, tipo_variant=None):
+# Agregamos 'max_episodes_to_plot' a la firma
+def plot_comparison(env_name_base, num_runs, smooth_window, tipo_variant=None, max_episodes_to_plot=None):
     """
     Genera los gráficos.
-    :param env_name_base: El nombre base del entorno (ej. TwoTigersEnv)
-    :param tipo_variant: 'corto', 'largo' o None. Se agrega al nombre del entorno.
     """
     
     # Construir el nombre real del directorio a buscar
@@ -97,29 +85,60 @@ def plot_comparison(env_name_base, num_runs, smooth_window, tipo_variant=None):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 8))
 
     plotted_any = False
+    
+    # 1. Determinar la longitud final de los datos (la más corta entre todos los logs y el parámetro)
+    global_min_ep_len = float('inf')
+    algo_data = {}
 
     for algo_name, base_path in algos.items():
-        print(f"Procesando {algo_name}...")
-        rewards, lengths, min_ep_len = load_log_data(base_path, env_name_search, num_runs)
+        # rewards y lengths ya están truncados a la longitud mínima de ESE algoritmo
+        rewards, lengths, min_ep_len_algo, valid_runs = load_log_data(base_path, env_name_search, num_runs)
         
-        if rewards is None or min_ep_len == 0:
-            print(f"  [!] No hay datos válidos para {algo_name} en {env_name_search}.\n")
+        if rewards is None or valid_runs < 1:
             continue
-        
-        print(f"  [OK] {rewards.shape[0]} corridas encontradas. Episodios: {min_ep_len}\n")
+            
+        global_min_ep_len = min(global_min_ep_len, min_ep_len_algo)
+        algo_data[algo_name] = {'rewards': rewards, 'lengths': lengths}
+
+    if global_min_ep_len == float('inf'):
+        print("\nERROR: No se encontró información válida de ningún algoritmo para generar la gráfica.")
+        return
+
+    # Aplicar la restricción del usuario
+    final_ep_len = global_min_ep_len
+    if max_episodes_to_plot is not None and max_episodes_to_plot > 0:
+        final_ep_len = min(global_min_ep_len, max_episodes_to_plot)
+
+    if final_ep_len == 0:
+        print("\nAdvertencia: El límite de episodios es cero o no hay datos disponibles.")
+        return
+
+    print(f"Truncando todos los logs a un máximo de {final_ep_len} episodios.")
+    print("="*60)
+    
+    # 2. Generar Plots
+    for algo_name, data in algo_data.items():
         plotted_any = True
 
+        rewards_all_runs = data['rewards']
+        lengths_all_runs = data['lengths']
+
+        # Truncamos los arrays a la longitud final común
+        rewards_final = rewards_all_runs[:, :final_ep_len]
+        lengths_final = lengths_all_runs[:, :final_ep_len]
+
+        print(f"Procesando {algo_name} con {rewards_final.shape[0]} corridas.")
+
         # Suavizar
-        rewards_smooth = smooth_data(rewards, smooth_window)
-        lengths_smooth = smooth_data(lengths, smooth_window)
+        rewards_smooth = smooth_data(rewards_final, smooth_window)
+        lengths_smooth = smooth_data(lengths_final, smooth_window)
         
         # Calcular estadísticas
         mean_r = np.mean(rewards_smooth, axis=0)
-        std_r = np.std(rewards_smooth, axis=0)
+        std_r = np.std(rewards_final, axis=0) # Usamos STD de los datos sin suavizar para la banda
         mean_l = np.mean(lengths_smooth, axis=0)
-        std_l = np.std(lengths_smooth, axis=0)
         
-        x_axis = np.arange(min_ep_len)
+        x_axis = np.arange(final_ep_len)
         
         # Plot Recompensas
         ax1.plot(x_axis, mean_r, label=algo_name, linewidth=2)
@@ -127,11 +146,9 @@ def plot_comparison(env_name_base, num_runs, smooth_window, tipo_variant=None):
         
         # Plot Largos
         ax2.plot(x_axis, mean_l, label=algo_name, linewidth=2)
-        ax2.fill_between(x_axis, mean_l - std_l, mean_l + std_l, alpha=0.2)
 
     if not plotted_any:
         print("\nERROR: No se encontró información de ningún algoritmo para generar la gráfica.")
-        print(f"Asegúrate de que existan carpetas como: IS-dqn_logs/{env_name_search}")
         return
 
     # Configuración de Gráficos
@@ -152,7 +169,7 @@ def plot_comparison(env_name_base, num_runs, smooth_window, tipo_variant=None):
     plt.tight_layout()
     output_file = f'comparativa_{env_name_search}.png'
     plt.savefig(output_file)
-    print(f"¡Gráfico guardado exitosamente en: {output_file}!")
+    print(f"\n¡Gráfico guardado exitosamente en: {output_file}!")
     # plt.show() 
 
 def main():
@@ -167,18 +184,23 @@ def main():
     
     parser.add_argument('--smooth', type=int, default=20, 
                         help='Ventana de suavizado.')
+    
+    parser.add_argument('--tipo', type=str, default=None, choices=['corto', 'largo','100', '1'],
+                        help='Opcional: Agrega sufijo al nombre del entorno para buscar logs específicos.')
 
-    # --- NUEVO ARGUMENTO ---
-    parser.add_argument('--tipo', type=str, default=None, choices=['corto', 'largo','100'],
-                        help='Opcional: Agrega "-corto" o "-largo" al nombre del entorno para buscar logs específicos.')
+    # --- NUEVO ARGUMENTO CLAVE ---
+    parser.add_argument('--max-episodes', type=int, default=None,
+                        help='Máximo número de episodios a incluir en la gráfica (trunca los logs a este valor).')
+    # ------------------------------
     
     args = parser.parse_args()
     
     if not os.path.exists('baselines') or not os.path.exists('IS-dqn_logs'):
         print("Error: Ejecuta desde la raíz del proyecto (donde están 'baselines' e 'IS-dqn_logs').")
-        return
+        sys.exit(1)
         
-    plot_comparison(args.env, args.runs, args.smooth, args.tipo)
+    # Pasamos el nuevo argumento a la función
+    plot_comparison(args.env, args.runs, args.smooth, args.tipo, args.max_episodes)
 
 if __name__ == '__main__':
     main()

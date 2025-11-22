@@ -460,13 +460,13 @@ if __name__ == "__main__":
         'num_runs': 10, # 10 corridas
         'episodes': 7000, # Timesteps total = episodes * max_step
         'max_step': 1000, # Máximos pasos por episodio
-        'learning_rate': 2.5e-5,
+        'learning_rate': 2.5e-4,
         'gamma': 0.95,
-        'batch_size': 8,
+        'batch_size': 8, 
         'buffer_size': 100_000, # (No usado por EpisodeMemory, pero lo guardamos)
         'min_epi_num': 20, # Empezar a entrenar después de 20 episodios
         'target_update_period': 4,
-        'eps_start': 0.1,
+        'eps_start': 0.2,
         'eps_end': 0.001,
         'eps_decay': 0.995,
         'tau': 0.005, # Para soft update

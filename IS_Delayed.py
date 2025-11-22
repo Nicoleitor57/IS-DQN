@@ -37,3 +37,5 @@ class KeyDoorBeliefWrapper(gym.Wrapper):
        self.base_env = env.unwrapped
        self.H = self.base_env.height
        self.W = self.base_env.width
+       
+       

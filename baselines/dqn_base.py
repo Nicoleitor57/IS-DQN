@@ -209,16 +209,16 @@ if __name__ == "__main__":
         #     "policy": "MlpPolicy", # 3x3 grid será aplanado
         #     "init_params": {"size": 10, "max_episode_steps": 1000}
         # },
-        # "KeyDoorMazeEnv": {
-        #     "class": KeyDoorMazeEnv,
-        #     "policy": "MlpPolicy", # 3x3 grid será aplanado
-        #     "init_params": {"height": 15, "width": 19, "max_episode_steps": 1000}
-        # },
-        "TwoTigersEnv": {
-            "class": TwoTigersEnv,
-            "policy": "MlpPolicy", # MultiDiscrete obs será aplanado y one-hot
-            "init_params": {"max_episode_steps": 1000}
+        "KeyDoorMazeEnv": {
+            "class": KeyDoorMazeEnv,
+            "policy": "MlpPolicy", # 3x3 grid será aplanado
+            "init_params": {"height": 15, "width": 19, "max_episode_steps": 1000}
         },
+        # "TwoTigersEnv": {
+        #     "class": TwoTigersEnv,
+        #     "policy": "MlpPolicy", # MultiDiscrete obs será aplanado y one-hot
+        #     "init_params": {"max_episode_steps": 1000}
+        # },
         # "DelayedObsEnv": {
         #     "class": DelayedObsEnv,
         #     "policy": "MlpPolicy", # 3x3 grid será aplanado
