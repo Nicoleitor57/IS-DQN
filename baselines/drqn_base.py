@@ -21,6 +21,7 @@ from Entornos.PODoorEnv import POKeyDoorEnv
 from Entornos.KeyDoorMazeEnv import KeyDoorMazeEnv
 from Entornos.TwoTigersEnv import TwoTigersEnv
 from Entornos.DelayedObsEnv import DelayedObsEnv
+from Entornos.StochasticDelayedObsEnv import DelayedStochasticObsEnv
 
 # --- INICIO: LÓGICA CENTRAL DE DRQN (DE KEEP9OING) ---
 
@@ -436,9 +437,14 @@ if __name__ == "__main__":
         #     "class": POKeyDoorEnv,
         #     "init_params": {"size": 10, "max_episode_steps": 1000}
         # },
-        "KeyDoorMazeEnv": {
-            "class": KeyDoorMazeEnv,
-            "init_params": {"height": 15, "width": 19, "max_episode_steps": 200}
+        # "KeyDoorMazeEnv": {
+        #     "class": KeyDoorMazeEnv,
+        #     "init_params": {"height": 15, "width": 19, "max_episode_steps": 200}
+        # },
+        "DelayedStochasticObsEnv": {
+            "class": DelayedStochasticObsEnv,
+            "policy": "MlpPolicy", # 3x3 grid será aplanado
+            "init_params": {"size": 10, "delay_steps": 3, "max_episode_steps": 1000}
         },
         # "TwoTigersEnv": {
         #     "class": TwoTigersEnv,
@@ -458,7 +464,7 @@ if __name__ == "__main__":
     # (Basados en el script DRQN.py)
     final_params = {
         'num_runs': 10, # 10 corridas
-        'episodes': 1500, # Timesteps total = episodes * max_step
+        'episodes': 6500, # Timesteps total = episodes * max_step
         'max_step': 1000, # Máximos pasos por episodio
         'learning_rate': 2.5e-4,
         'gamma': 0.95,

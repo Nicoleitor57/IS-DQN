@@ -35,22 +35,52 @@ class StochasticGridEnv(gym.Env):
         self.np_random, seed = gym.utils.seeding.np_random()
 
 
-    def _get_obs(self):
+    # def _get_obs(self):
         
+    #     obs = np.ones((3, 3), dtype=np.int8) * 1 
+    #     x, y = self._agent_location
+    #     for i_obs, i_grid in enumerate(range(x - 1, x + 2)):
+    #         for j_obs, j_grid in enumerate(range(y - 1, y + 2)):
+    #             if 0 <= i_grid < self.size and 0 <= j_grid < self.size:
+    #                 obs[i_obs, j_obs] = self._grid[i_grid, j_grid]
+    #                 if (i_grid, j_grid) == self._key_location:
+    #                     obs[i_obs, j_grid] = 2
+    #                 elif (i_grid, j_grid) == self._door_location:
+    #                     obs[i_obs, j_grid] = 3
+    #                 elif (i_grid, j_grid) == self._agent_location:
+    #                     obs[i_obs, j_grid] = 4
+    #     return obs.astype(np.int8)
+    def _get_obs(self):
+        # Inicializamos la observación local a 1 (Muro, por si está fuera de límites)
         obs = np.ones((3, 3), dtype=np.int8) * 1 
         x, y = self._agent_location
+        
+        # Recorremos la ventana de 3x3
         for i_obs, i_grid in enumerate(range(x - 1, x + 2)):
             for j_obs, j_grid in enumerate(range(y - 1, y + 2)):
+                
+                # Verificamos si la coordenada global está dentro de la cuadrícula
                 if 0 <= i_grid < self.size and 0 <= j_grid < self.size:
+                    
+                    # --- CÓDIGO CORREGIDO: Usamos i_obs, j_obs para acceder a 'obs' ---
+                    
+                    # 1. Base Grid (Piso/Muro)
                     obs[i_obs, j_obs] = self._grid[i_grid, j_grid]
+                    
+                    # 2. Llave (K)
                     if (i_grid, j_grid) == self._key_location:
-                        obs[i_obs, j_grid] = 2
+                        obs[i_obs, j_obs] = 2 # K
+                        
+                    # 3. Puerta (D)
                     elif (i_grid, j_grid) == self._door_location:
-                        obs[i_obs, j_grid] = 3
+                        obs[i_obs, j_obs] = 3 # D
+                        
+                    # 4. Agente (A) - Siempre en (1, 1) local
                     elif (i_grid, j_grid) == self._agent_location:
-                        obs[i_obs, j_grid] = 4
+                        obs[i_obs, j_obs] = 4 # A
+                        
         return obs.astype(np.int8)
-
+    
     def _get_info(self):
         return {
             "agent_location": self._agent_location,

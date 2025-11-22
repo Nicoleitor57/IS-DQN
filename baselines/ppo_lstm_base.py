@@ -22,6 +22,7 @@ from Entornos.PODoorEnv import POKeyDoorEnv
 from Entornos.KeyDoorMazeEnv import KeyDoorMazeEnv
 from Entornos.TwoTigersEnv import TwoTigersEnv
 from Entornos.DelayedObsEnv import DelayedObsEnv
+from Entornos.StochasticDelayedObsEnv import DelayedStochasticObsEnv
 
 
 def check_gpu():
@@ -181,10 +182,15 @@ if __name__ == "__main__":
         #     "policy": "MlpLstmPolicy", 
         #     "init_params": {"size": 10, "max_episode_steps": 1000}
         # },
-        "KeyDoorMazeEnv": {
-            "class": KeyDoorMazeEnv,
-            "policy": "MlpLstmPolicy",
-            "init_params": {"height": 15, "width": 19, "max_episode_steps": 200}
+        # "KeyDoorMazeEnv": {
+        #     "class": KeyDoorMazeEnv,
+        #     "policy": "MlpLstmPolicy",
+        #     "init_params": {"height": 15, "width": 19, "max_episode_steps": 1000}
+        # },
+        "DelayedStochasticObsEnv": {
+            "class": DelayedStochasticObsEnv,
+            "policy": "MlpPolicy", # 3x3 grid será aplanado
+            "init_params": {"size": 10, "delay_steps": 3, "max_episode_steps": 1000}
         },
         # "TwoTigersEnv": {
         #     "class": TwoTigersEnv,
@@ -219,8 +225,8 @@ if __name__ == "__main__":
     # }
     final_params = {
     'num_runs': 10,
-    'total_timesteps': 300_000,
-    'learning_rate': 1e-4,       # Ligeramente más alta para más velocidad inicial
+    'total_timesteps': 6_500_000,
+    'learning_rate': 1e-5,       # Ligeramente más alta para más velocidad inicial
     'n_steps': 1024,             # <--- AUMENTADO: Horizonte de memoria
     'batch_size': 128,           # <--- AUMENTADO: Estabilidad con n_steps más largo
     'n_epochs': 10,
