@@ -181,16 +181,16 @@ if __name__ == "__main__":
         #     "policy": "MlpLstmPolicy", 
         #     "init_params": {"size": 10, "max_episode_steps": 1000}
         # },
-        "KeyDoorMazeEnv": {
-            "class": KeyDoorMazeEnv,
-            "policy": "MlpLstmPolicy",
-            "init_params": {"height": 15, "width": 19, "max_episode_steps": 200}
-        },
-        # "TwoTigersEnv": {
-        #     "class": TwoTigersEnv,
-        #     "policy": "MlpLstmPolicy", 
-        #     "init_params": {"max_episode_steps": 1000}
-        # },
+        #"KeyDoorMazeEnv": {
+        #    "class": KeyDoorMazeEnv,
+        #   "policy": "MlpLstmPolicy",
+        #    "init_params": {"height": 15, "width": 19, "max_episode_steps": 200}
+        #},
+         "TwoTigersEnv": {
+             "class": TwoTigersEnv,
+             "policy": "MlpLstmPolicy", 
+             "init_params": {"max_episode_steps": 50}
+         },
         # "DelayedObsEnv": {
         #     "class": DelayedObsEnv,
         #     "policy": "MlpLstmPolicy", 
@@ -199,41 +199,41 @@ if __name__ == "__main__":
     }
 
     
-    # final_params = {
-    #     'num_runs': 10,
-    #     'total_timesteps': 6_500_000,
-    #     'learning_rate': 2.5e-5,       # Tasa de aprendizaje
-    #     'n_steps': 256,              # Pasos por recolección antes de la actualización
-    #     'batch_size': 32,            # Tamaño del minibatch
-    #     'n_epochs': 10,              # Épocas de optimización por actualización
-    #     'gamma': 0.95,               # Factor de descuento
-    #     'gae_lambda': 0.95,          # Factor GAE
-    #     'clip_range': 0.2,           # Rango de PPO clip
-    #     'ent_coef': 0.0,             # Coeficiente de entropía (regularización)
-    #     # Parámetros específicos de la política LSTM
-    #     'policy_kwargs': dict(
-    #         net_arch=dict(pi=[64, 64], vf=[64, 64]), # Arquitectura
-    #         lstm_hidden_size=64, # Tamaño del estado oculto
-    #         enable_critic_lstm=True, # El crítico también usa LSTM
-    #     ) 
-    # }
     final_params = {
     'num_runs': 10,
     'total_timesteps': 300_000,
-    'learning_rate': 1e-4,       # Ligeramente más alta para más velocidad inicial
-    'n_steps': 1024,             # <--- AUMENTADO: Horizonte de memoria
-    'batch_size': 128,           # <--- AUMENTADO: Estabilidad con n_steps más largo
-    'n_epochs': 10,
-    'gamma': 0.99,               # <--- AUMENTADO: Valorar mucho más el futuro (Puerta al final)
-    'gae_lambda': 0.95,
-    'clip_range': 0.2,
-    'ent_coef': 0.01,            # <--- AUMENTADO: Más exploración en laberinto
+    'learning_rate': 2.5e-5,       # Tasa de aprendizaje
+    'n_steps': 256,              # Pasos por recolección antes de la actualización
+    'batch_size': 32,            # Tamaño del minibatch
+    'n_epochs': 10,              # Épocas de optimización por actualización
+    'gamma': 0.95,               # Factor de descuento
+    'gae_lambda': 0.95,          # Factor GAE
+    'clip_range': 0.2,           # Rango de PPO clip
+    'ent_coef': 0.0,             # Coeficiente de entropía (regularización)
+     # Parámetros específicos de la política LSTM
     'policy_kwargs': dict(
-        net_arch=dict(pi=[128, 128], vf=[128, 128]), # <--- AUMENTADO: Mayor capacidad
-        lstm_hidden_size=128,                        # <--- AUMENTADO: Más memoria
-        enable_critic_lstm=True,
-    ) 
-}
+         net_arch=dict(pi=[64, 64], vf=[64, 64]), # Arquitectura
+         lstm_hidden_size=64, # Tamaño del estado oculto
+         enable_critic_lstm=True, # El crítico también usa LSTM
+     ) 
+}    
+# final_params = {
+# 'num_runs': 10,
+# 'total_timesteps': 300_000,
+# 'learning_rate': 1e-4,       # Ligeramente más alta para más velocidad inicial
+# 'n_steps': 1024,             # <--- AUMENTADO: Horizonte de memoria
+# 'batch_size': 128,           # <--- AUMENTADO: Estabilidad con n_steps más largo
+# 'n_epochs': 10,
+# 'gamma': 0.99,               # <--- AUMENTADO: Valorar mucho más el futuro (Puerta al final)
+# 'gae_lambda': 0.95,
+# 'clip_range': 0.2,
+# 'ent_coef': 0.01,            # <--- AUMENTADO: Más exploración en laberinto
+#'policy_kwargs': dict(
+#     net_arch=dict(pi=[128, 128], vf=[128, 128]), # <--- AUMENTADO: Mayor capacidad
+#      lstm_hidden_size=128,                        # <--- AUMENTADO: Más memoria
+#       enable_critic_lstm=True,
+#     
+#}
 
     # --- 4. BUCLE PRINCIPAL DE ENTORNOS ---
     for env_id, env_config in ENVIRONMENTS.items():
