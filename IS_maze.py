@@ -745,7 +745,7 @@ if __name__ == "__main__":
         print(f"\n=== Iniciando {env_id} Run {run_i} ===")
         
         # 1. Init Entorno y Agente
-        env = KeyDoorMazeEnv(max_episode_steps=1000) # Horizonte más largo para el laberinto
+        env = KeyDoorMazeEnv(max_episode_steps=200) # Horizonte más largo para el laberinto
         env = KeyDoorBeliefWrapper(env)
         
         agent = DQNAgent(
