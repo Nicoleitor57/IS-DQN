@@ -439,7 +439,7 @@ if __name__ == "__main__":
         # },
         # "KeyDoorMazeEnv": {
         #     "class": KeyDoorMazeEnv,
-        #     "init_params": {"height": 15, "width": 19, "max_episode_steps": 200}
+        #     "init_params": {"height": 15, "width": 19, "max_episode_steps": 1000}
         # },
         "DelayedStochasticObsEnv": {
             "class": DelayedStochasticObsEnv,

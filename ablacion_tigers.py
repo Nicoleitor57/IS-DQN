@@ -237,6 +237,10 @@ class BeliefWrapperNoH(BeliefStateWrapper):
 class QNet(nn.Module):
     def __init__(self, state_space: int, action_space: int, net_arch: list = [64, 64]):
         super(QNet, self).__init__()
+        
+        self.state_space = state_space 
+        self.action_space = action_space
+        
         layers = []; input_dim = state_space
         for layer_size in net_arch:
             layers.append(nn.Linear(input_dim, layer_size)); layers.append(nn.ReLU())
@@ -268,6 +272,8 @@ class PrioritizedReplayBuffer:
         weights = (self.size * probs[idxs]) ** (-beta); weights /= weights.max(); return samples, idxs, np.array(weights, dtype=np.float32)
     def update_priorities(self, batch_indices, batch_priorities):
         for idx, prio in zip(batch_indices, batch_priorities): self.priorities[idx] = (prio + self.epsilon)
+    def __len__(self):
+        return self.size
 
 class DQNAgent:
     def __init__(self, state_space: int, action_space: int, h_params: dict, device='cpu'):
@@ -335,8 +341,9 @@ def get_experiment_config(name):
 def run_ablation_experiment(env_config, h_params, exp_name, run_idx, device):
     WrapperClass, alpha, exp_folder = get_experiment_config(exp_name)
     
-    # 1. Configurar paths
-    log_dir = f"ablacion/{exp_folder}/run_{run_idx}"
+    # 1. Configurar paths (guardar en carpeta con nombre del script)
+    script_name = "ablacion_tigers"
+    log_dir = f"{script_name}/{exp_folder}/run_{run_idx}"
     os.makedirs(log_dir, exist_ok=True)
     model_path = os.path.join(log_dir, "model.pth")
     
@@ -445,7 +452,7 @@ if __name__ == "__main__":
         for run_idx in range(1, BASE_PARAMS['num_runs'] + 1):
             
             # Comprobar si ya existe el log
-            log_path = f"ablacion/{case_name}/run_{run_idx}/monitor.csv"
+            log_path = f"ablacion_tigers/{case_name}/run_{run_idx}/monitor.csv"
             if os.path.exists(log_path):
                 try:
                     df = pd.read_csv(log_path, skiprows=1)

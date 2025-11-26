@@ -606,7 +606,7 @@ if __name__ == "__main__":
         'env_size': 10,
         'slip_prob': 0.1,
         'delay_steps': 3, # Retardo de 3 pasos
-        'max_episode_steps': 1000,
+        'max_episode_steps': 200,
         
         # Hiperparámetros de la DQN (v15 - estable)
         'learning_rate': 2.5e-5,     

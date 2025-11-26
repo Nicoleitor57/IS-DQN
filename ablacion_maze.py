@@ -178,6 +178,8 @@ class QNet(nn.Module):
         
         # El tamaño del input es 856 (con H) o 855 (sin H).
         # La red debe poder manejar ambos.
+        self.state_space = state_space 
+        self.action_space = action_space
         layers = []
         input_dim = state_space
         
@@ -217,6 +219,8 @@ class PrioritizedReplayBuffer:
         weights = (self.size * probs[idxs]) ** (-beta); weights /= weights.max(); return samples, idxs, np.array(weights, dtype=np.float32)
     def update_priorities(self, batch_indices, batch_priorities):
         for idx, prio in zip(batch_indices, batch_priorities): self.priorities[idx] = (prio + self.epsilon)
+    def __len__(self):
+        return self.size
 
 class DQNAgent:
     def __init__(self, state_space: int, action_space: int, h_params: dict, device='cpu'):
@@ -266,8 +270,9 @@ def get_experiment_config(name):
 def run_ablation_experiment(env_config, h_params, exp_name, run_idx, device):
     WrapperClass, alpha, exp_folder, net_arch_dict = get_experiment_config(exp_name)
     
-    # 1. Configurar paths
-    log_dir = f"ablacion/{exp_folder}/run_{run_idx}"
+    # 1. Configurar paths (guardar en carpeta con nombre del script)
+    script_name = "ablacion_maze"
+    log_dir = f"{script_name}/{exp_folder}/run_{run_idx}"
     os.makedirs(log_dir, exist_ok=True)
     model_path = os.path.join(log_dir, "model.pth")
     
@@ -332,6 +337,24 @@ def run_ablation_experiment(env_config, h_params, exp_name, run_idx, device):
     except Exception as e:
         print(f"    ERROR: {e}")
         return False
+    
+def check_gpu():
+    """Verifica si PyTorch puede detectar y usar la GPU."""
+    print(f"\n{'='*40}")
+    print(" Verificando disponibilidad de GPU (PyTorch)...")
+    print(f"{'='*40}")
+    if torch.cuda.is_available():
+        device_count = torch.cuda.device_count()
+        current_dev_idx = torch.cuda.current_device()
+        device_name = torch.cuda.get_device_name(current_dev_idx)
+        print(f"✅ ¡Éxito! GPU disponible.")
+        print(f"   Usando dispositivo {current_dev_idx}: {device_name}")
+        return torch.device("cuda")
+    else:
+        print(f"❌ GPU no disponible. Usando CPU.")
+        return torch.device("cpu")
+    print(f"{'='*40}\n")
+    
 
 
 if __name__ == "__main__":
@@ -377,7 +400,7 @@ if __name__ == "__main__":
         for run_idx in range(1, BASE_PARAMS['num_runs'] + 1):
             
             # Comprobar si ya existe el log
-            log_path = f"ablacion/{case_name}/run_{run_idx}/model.pth"
+            log_path = f"ablacion_maze/{case_name}/run_{run_idx}/model.pth"
             if os.path.exists(log_path):
                 print(f"\n[SKIP] {case_name} Run {run_idx} ya existe. Saltando.")
                 continue

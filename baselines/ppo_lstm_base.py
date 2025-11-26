@@ -230,13 +230,13 @@ if __name__ == "__main__":
     'n_steps': 1024,             # <--- AUMENTADO: Horizonte de memoria
     'batch_size': 128,           # <--- AUMENTADO: Estabilidad con n_steps más largo
     'n_epochs': 10,
-    'gamma': 0.99,               # <--- AUMENTADO: Valorar mucho más el futuro (Puerta al final)
+    'gamma': 0.9,               # <--- AUMENTADO: Valorar mucho más el futuro (Puerta al final)
     'gae_lambda': 0.95,
     'clip_range': 0.2,
     'ent_coef': 0.01,            # <--- AUMENTADO: Más exploración en laberinto
     'policy_kwargs': dict(
         net_arch=dict(pi=[128, 128], vf=[128, 128]), # <--- AUMENTADO: Mayor capacidad
-        lstm_hidden_size=128,                        # <--- AUMENTADO: Más memoria
+        lstm_hidden_size=64,                        # <--- AUMENTADO: Más memoria
         enable_critic_lstm=True,
     ) 
 }
