@@ -87,7 +87,7 @@ python -m IS.IS_tigers_3
 
 # $\text{IS-DQN}$: Reinforcement Learning con Estructura de Información y PSR para POMDPs 🧠
 
-Este proyecto implementa y evalúa varias arquitecturas de **Deep Q-Network (DQN)** que incorporan la **Estructura de Información (IS)** y las **Representaciones de Estado Predictivas (PSR)** como un *sesgo inductivo* explícito. El objetivo es mejorar la eficiencia en la representación de la historia y el rendimiento del agente en entornos de **Proceso de Decisión de Markov Parcialmente Observable (POMDP)**.
+Este proyecto implementa y evalúa varias arquitecturas de **Deep Q-Network (DQN)** que incorporan la **Estructura de Información (IS)** y las **Representaciones de Estado Predictivas (PSR)** como un *sesgo inductivo* explícito. El objetivo es mejorar la eficiencia en la representación de la historia y el rendimiento del agente en entornos de **Proceso de Decisión de Markov Parcialmente Observable (POMDP)**. Este trabajo se ve motivado por: **“On the Role of Information Structure in Reinforcement Learning for Partially-Observable Sequential Teams and Games”**
 
 ***
 
