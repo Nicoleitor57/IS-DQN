@@ -189,7 +189,7 @@ if __name__ == "__main__":
         # },
         "DelayedStochasticObsEnv": {
             "class": DelayedStochasticObsEnv,
-            "policy": "MlpLstmPolicy", # 3x3 grid será aplanado
+            "policy": "MlpPolicy", # 3x3 grid será aplanado
             "init_params": {"size": 10, "delay_steps": 3, "max_episode_steps": 1000}
         },
         # "TwoTigersEnv": {
