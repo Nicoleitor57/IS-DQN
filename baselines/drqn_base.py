@@ -444,7 +444,7 @@ if __name__ == "__main__":
         "DelayedStochasticObsEnv": {
             "class": DelayedStochasticObsEnv,
             "policy": "MlpPolicy", # 3x3 grid será aplanado
-            "init_params": {"size": 10, "delay_steps": 3, "max_episode_steps": 1000}
+            "init_params": {"size": 10, "delay_steps": 3, "max_episode_steps": 200}
         },
         # "TwoTigersEnv": {
         #     "class": TwoTigersEnv,
@@ -464,7 +464,7 @@ if __name__ == "__main__":
     # (Basados en el script DRQN.py)
     final_params = {
         'num_runs': 10, # 10 corridas
-        'episodes': 6500, # Timesteps total = episodes * max_step
+        'episodes': 1500, # Timesteps total = episodes * max_step
         'max_step': 1000, # Máximos pasos por episodio
         'learning_rate': 2.5e-4,
         'gamma': 0.95,

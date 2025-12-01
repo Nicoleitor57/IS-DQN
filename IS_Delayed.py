@@ -628,7 +628,9 @@ if __name__ == "__main__":
         'alpha': 0.6, 'beta_start': 0.4, 'beta_frames': 500_000
     }
 
-    env_id = f"DelayedObsEnv-k{final_params['delay_steps', 'max_episode_steps']}"
+    # build env id using delay steps (k). If you want to include max_episode_steps,
+    # rename this string consistently across comparators (comparativa.py expects e.g. DelayedObsEnv-k5)
+    env_id = f"DelayedObsEnv-k{final_params['delay_steps']}-T{final_params['max_episode_steps']}"
     log_dir_base = f"IS-dqn_logs/{env_id}"
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Usando dispositivo: {device}")
@@ -647,6 +649,7 @@ if __name__ == "__main__":
             size=final_params['env_size'],
             slip_prob=final_params['slip_prob'],
             delay_steps=final_params['delay_steps'],
+            max_episode_steps=final_params['max_episode_steps'],
         )
         env = DelayedBeliefWrapper(base_env) # <-- Aplicamos el Belief Wrapper
 
