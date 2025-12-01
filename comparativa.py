@@ -134,9 +134,17 @@ def plot_comparison(env_name_base, num_runs, smooth_window, tipo_variant=None, m
         lengths_smooth = smooth_data(lengths_final, smooth_window)
         
         # Calcular estadísticas
+        # mean_r = np.mean(rewards_smooth, axis=0)
+        # std_r = np.std(rewards_final, axis=0) # Usamos STD de los datos sin suavizar para la banda
+        # mean_l = np.mean(lengths_smooth, axis=0)
+        
+        # Calcular estadísticas
         mean_r = np.mean(rewards_smooth, axis=0)
-        std_r = np.std(rewards_final, axis=0) # Usamos STD de los datos sin suavizar para la banda
+        std_r = np.std(rewards_final, axis=0)  # Banda para recompensa
+
         mean_l = np.mean(lengths_smooth, axis=0)
+        std_l = np.std(lengths_final, axis=0)  # Banda para largo (nuevo)
+
         
         x_axis = np.arange(final_ep_len)
         
@@ -146,6 +154,7 @@ def plot_comparison(env_name_base, num_runs, smooth_window, tipo_variant=None, m
         
         # Plot Largos
         ax2.plot(x_axis, mean_l, label=algo_name, linewidth=2)
+        ax2.fill_between(x_axis, mean_l - std_l, mean_l + std_l, alpha=0.2)
 
     if not plotted_any:
         print("\nERROR: No se encontró información de ningún algoritmo para generar la gráfica.")
@@ -176,7 +185,7 @@ def main():
     parser = argparse.ArgumentParser(description="Genera gráficos comparativos.")
     
     parser.add_argument('--env', type=str, required=True, 
-                        choices=['TwoTigersEnv', 'KeyDoorMazeEnv', 'PODoorEnv', 'DelayedObsEnv'],
+                        choices=['TwoTigersEnv', 'KeyDoorMazeEnv', 'PODoorEnv', 'DelayedObsEnv', 'DelayedObsEnv-k5'],
                         help='Nombre base del entorno.')
     
     parser.add_argument('--runs', type=int, default=30, 

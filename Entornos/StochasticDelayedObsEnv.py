@@ -18,7 +18,7 @@ class DelayedStochasticObsEnv(gym.Env):
     """
     metadata = {"render_modes": ["ansi"]}
 
-    def __init__(self, size=10, max_episode_steps=100, render_mode="ansi", 
+    def __init__(self, size=10, max_episode_steps=200, render_mode="ansi", 
                  slip_prob=0.1, delay_steps=3):
         
         self.delay_steps = delay_steps 
